@@ -6,74 +6,109 @@ export class Game {
   private _toto: Board = new Board();
 
   public Play(symbol: string, x: number, y: number): void {
-    //if first move
-    if (this._lastSymbol == " ") {
-      //if player is X
-      if (symbol == "O") {
-        throw new Error("Invalid first player");
+    if (this.IsFirstMove()) {
+      if (this.PlayerIsX(symbol)) {
       }
+    } else if (this.PlayerRepeated(symbol)) {
+    } else if (this.AlreadyPlayedTile(x, y)) {
     }
-    //if not first move but player repeated
-    else if (symbol == this._lastSymbol) {
-      throw new Error("Invalid next player");
-    }
-    //if not first move but play on an already played tile
-    else if (this._toto.TileAt(x, y).Symbol != " ") {
+    this.UpdateGameState(symbol, x, y);
+  }
+
+  private AlreadyPlayedTile(x: number, y: number): boolean {
+    if (this._toto.TileAt(x, y).Symbol != " ") {
       throw new Error("Invalid position");
     }
+    return false;
+  }
 
-    // update game state
+  public IsFirstMove(): boolean {
+    if (this._lastSymbol == " ") return true;
+    return false;
+  }
+
+  private PlayerIsX(symbol: string): boolean {
+    if (symbol == "O") {
+      throw new Error("Invalid first player");
+    }
+    return true;
+  }
+
+  public PlayerRepeated(symbol: string): boolean {
+    if (symbol == this._lastSymbol) throw new Error("Invalid next player");
+    return false;
+  }
+
+  private UpdateGameState(symbol: string, x: number, y: number) {
     this._lastSymbol = symbol;
     this._toto.AddTileAt(symbol, x, y);
   }
 
   public Winner(): string {
-    //if the positions in first row are taken
-    if (
-      this._toto.TileAt(0, 0)!.Symbol != " " &&
-      this._toto.TileAt(0, 1)!.Symbol != " " &&
-      this._toto.TileAt(0, 2)!.Symbol != " "
-    ) {
-      //if first row is full with same symbol
-      if (
-        this._toto.TileAt(0, 0)!.Symbol == this._toto.TileAt(0, 1)!.Symbol &&
-        this._toto.TileAt(0, 2)!.Symbol == this._toto.TileAt(0, 1)!.Symbol
-      ) {
+    if (this.PositionsFirstRowTaken()) {
+      if (this.FirstRowFullSameSymbol()) {
         return this._toto.TileAt(0, 0)!.Symbol;
       }
     }
 
-    //if the positions in 2nd row are taken
-    if (
-      this._toto.TileAt(1, 0)!.Symbol != " " &&
-      this._toto.TileAt(1, 1)!.Symbol != " " &&
-      this._toto.TileAt(1, 2)!.Symbol != " "
-    ) {
-      //if middle row is full with same symbol
-      if (
-        this._toto.TileAt(1, 0)!.Symbol == this._toto.TileAt(1, 1)!.Symbol &&
-        this._toto.TileAt(1, 2)!.Symbol == this._toto.TileAt(1, 1)!.Symbol
-      ) {
+    if (this.PositionsSecondRowTaken()) {
+      if (this.MiddleRowFullSameSymbol()) {
         return this._toto.TileAt(1, 0)!.Symbol;
       }
     }
 
-    //if the positions in 2nd row are taken
-    if (
-      this._toto.TileAt(2, 0)!.Symbol != " " &&
-      this._toto.TileAt(2, 1)!.Symbol != " " &&
-      this._toto.TileAt(2, 2)!.Symbol != " "
-    ) {
-      //if middle row is full with same symbol
-      if (
-        this._toto.TileAt(2, 0)!.Symbol == this._toto.TileAt(2, 1)!.Symbol &&
-        this._toto.TileAt(2, 2)!.Symbol == this._toto.TileAt(2, 1)!.Symbol
-      ) {
+    if (this.PositionsThirdRowTaken()) {
+      if (this.ThirdRowFullSameSymbol()) {
         return this._toto.TileAt(2, 0)!.Symbol;
       }
     }
 
     return " ";
+  }
+
+  private ThirdRowFullSameSymbol(): boolean {
+    return (
+      this._toto.TileAt(2, 0)!.Symbol == this._toto.TileAt(2, 1)!.Symbol &&
+      this._toto.TileAt(2, 2)!.Symbol == this._toto.TileAt(2, 1)!.Symbol
+    );
+  }
+
+  private PositionsThirdRowTaken(): boolean {
+    return (
+      this._toto.TileAt(2, 0)!.Symbol != " " &&
+      this._toto.TileAt(2, 1)!.Symbol != " " &&
+      this._toto.TileAt(2, 2)!.Symbol != " "
+    );
+  }
+
+  private FirstRowFullSameSymbol(): boolean {
+    return (
+      this._toto.TileAt(0, 0)!.Symbol == this._toto.TileAt(0, 1)!.Symbol &&
+      this._toto.TileAt(0, 2)!.Symbol == this._toto.TileAt(0, 1)!.Symbol
+    );
+  }
+
+  private PositionsFirstRowTaken(): boolean {
+    return (
+      this._toto.TileAt(0, 0)!.Symbol != " " &&
+      this._toto.TileAt(0, 1)!.Symbol != " " &&
+      this._toto.TileAt(0, 2)!.Symbol != " "
+    );
+  }
+
+  private PositionsSecondRowTaken(): boolean {
+    return (
+      this._toto.TileAt(1, 0)!.Symbol != " " &&
+      this._toto.TileAt(1, 1)!.Symbol != " " &&
+      this._toto.TileAt(1, 2)!.Symbol != " "
+    );
+  }
+
+  private MiddleRowFullSameSymbol(): boolean {
+    return (
+      this._toto.TileAt(1, 0)!.Symbol == this._toto.TileAt(1, 1)!.Symbol &&
+      this._toto.TileAt(1, 2)!.Symbol == this._toto.TileAt(1, 1)!.Symbol
+    );
   }
 }
 
